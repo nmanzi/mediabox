@@ -11,6 +11,7 @@ services:
     volumes:
       - "${CONFIG_DIR}/sabnzbd:/config"
       - "${MEDIA_DIR}:/media"
+      - "${DL_DIR}:/download"
     ports:
       - 8080:8080
     restart: unless-stopped
@@ -24,6 +25,7 @@ services:
     volumes:
       - "${CONFIG_DIR}/radarr:/config"
       - "${MEDIA_DIR}:/media"
+      - "${DL_DIR}:/download"
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -39,6 +41,7 @@ services:
     volumes:
       - "${CONFIG_DIR}/sonarr:/config"
       - "${MEDIA_DIR}:/media"
+      - "${DL_DIR}:/download"
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -54,6 +57,7 @@ services:
     volumes:
       - "${CONFIG_DIR}/prowlarr:/config"
       - "${MEDIA_DIR}:/media"
+      - "${DL_DIR}:/download"
     ports:
       - 9696:9696
     restart: unless-stopped
@@ -67,6 +71,7 @@ services:
     volumes:
       - "${CONFIG_DIR}/transmission:/config"
       - "${MEDIA_DIR}:/media"
+      - "${DL_DIR}:/download"
     environment:
       - OPENVPN_PROVIDER=PIA
       - OPENVPN_USERNAME=${VPN_USER}
@@ -76,9 +81,9 @@ services:
       - TRANSMISSION_RATIO_LIMIT_ENABLED=true
       - TRANSMISSION_RATIO_LIMIT=2
       - TRANSMISSION_HOME=/config
-      - TRANSMISSION_DOWNLOAD_DIR=/media/download/torrent/complete
+      - TRANSMISSION_DOWNLOAD_DIR=/download/torrent/complete
       - TRANSMISSION_INCOMPLETE_DIR_ENABLED=true
-      - TRANSMISSION_INCOMPLETE_DIR=/media/download/torrent/incomplete
+      - TRANSMISSION_INCOMPLETE_DIR=/download/torrent/incomplete
       - LOCAL_NETWORK=192.168.1.0/24
       - PUID=1000
       - PGID=1000
