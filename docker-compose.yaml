@@ -134,3 +134,15 @@ services:
       - TZ=Australia/perth
     ports:
       - 8181:8181
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Australia/Perth
+    volumes:
+      - "${CONFIG_DIR}/flaresolverr:/config"
+    ports:
+      - 8191:8191
+    restart: unless-stopped
