@@ -63,38 +63,22 @@ services:
     restart: unless-stopped
     depends_on:
       - sabnzbd
-  transmission:
-    cap_add:
-      - NET_ADMIN
-    sysctls:
-      - "net.ipv6.conf.all.disable_ipv6=0"
-    volumes:
-      - "${CONFIG_DIR}/transmission:/config"
-      - "${MEDIA_DIR}:/media"
-      - "${DL_DIR}:/download"
+  deluge:
+    image: lscr.io/linuxserver/deluge:latest
+    container_name: deluge
     environment:
-      - OPENVPN_PROVIDER=PIA
-      - OPENVPN_USERNAME=${VPN_USER}
-      - OPENVPN_PASSWORD=${VPN_PASS}
-      - OPENVPN_CONFIG=au_perth
-      - TRANSMISSION_PORT_FORWARDING_ENABLED=true
-      - TRANSMISSION_RATIO_LIMIT_ENABLED=true
-      - TRANSMISSION_RATIO_LIMIT=2
-      - TRANSMISSION_HOME=/config
-      - TRANSMISSION_DOWNLOAD_DIR=/download/torrent/complete
-      - TRANSMISSION_INCOMPLETE_DIR_ENABLED=true
-      - TRANSMISSION_INCOMPLETE_DIR=/download/torrent/incomplete
-      - LOCAL_NETWORK=192.168.1.0/24
       - PUID=1000
       - PGID=1000
       - TZ=Australia/Perth
-    logging:
-      driver: json-file
-      options:
-          max-size: 10m
+      - DELUGE_LOGLEVEL=error #optional
+    volumes:
+      - "${CONFIG_DIR}/deluge:/config"
+      - "${DL_DIR}:/download"
     ports:
-      - '9091:9091'
-    image: haugene/transmission-openvpn
+      - 8112:8112
+      - 6881:6881
+      - 6881:6881/udp
+      - 58846:58846 #optional
     restart: unless-stopped
   overseerr:
     image: sctx/overseerr:latest
@@ -145,4 +129,21 @@ services:
       - "${CONFIG_DIR}/flaresolverr:/config"
     ports:
       - 8191:8191
+    restart: unless-stopped
+  unpackerr:
+    image: golift/unpackerr
+    container_name: unpackerr
+    user: 1000:1000
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Australia/Perth
+      - UN_LOG_FILE=/config/unpackerr.log
+      - UN_SONARR_0_URL=http://sonarr:8989
+      - UN_RADARR_0_URL=http://radarr:7878
+      - UN_SONARR_0_API_KEY=${SONARR_API_KEY}
+      - UN_RADARR_0_API_KEY=${RADARR_API_KEY}
+    volumes:
+      - "${CONFIG_DIR}/unpackerr:/config"
+      - "${DL_DIR}:/download"
     restart: unless-stopped
